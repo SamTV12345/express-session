@@ -75,3 +75,26 @@ func TestShouldSetHttOnly(t *testing.T) {
 		t.Error("Expected false but got", cookie.HttpOnly)
 	}
 }
+
+func TestShouldSetExpiresWithMaxAge(t *testing.T) {
+	var maxAge = int64(60000)
+	var cookie = NewCookie(nil)
+	cookie.SetMaxAge(&maxAge)
+
+	if !(cookie.expires.UnixMilli()-time.Now().UnixMilli()-1000 <= maxAge) {
+		t.Error("Expected", maxAge, "but got", cookie.expires.UnixMilli())
+	}
+	if !(cookie.expires.UnixMilli()-time.Now().UnixMilli()+1000 >= maxAge) {
+		t.Error("Expected", maxAge, "but got", cookie.expires.UnixMilli())
+	}
+}
+
+func TestShouldSetPath(t *testing.T) {
+	var stringPath = "/foo"
+	var cookie = NewCookie(&CookieParam{
+		Path: &stringPath,
+	})
+	if cookie.Path != stringPath {
+		t.Error("Expected", stringPath, "but got", cookie.Path)
+	}
+}
